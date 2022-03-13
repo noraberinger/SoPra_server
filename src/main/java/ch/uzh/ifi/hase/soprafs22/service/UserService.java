@@ -1,6 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
-import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
+//import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import org.slf4j.Logger;
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,56 +27,126 @@ import java.util.UUID;
 @Transactional
 public class UserService {
 
-  private final Logger log = LoggerFactory.getLogger(UserService.class);
+    private final Logger log = LoggerFactory.getLogger(UserService.class);
 
-  private final UserRepository userRepository;
+    private final UserRepository userRepository;
 
-  @Autowired
-  public UserService(@Qualifier("userRepository") UserRepository userRepository) {
-    this.userRepository = userRepository;
-  }
-
-  public List<User> getUsers() {
-    return this.userRepository.findAll();
-  }
-
-  public User createUser(User newUser) {
-    newUser.setToken(UUID.randomUUID().toString());
-    newUser.setStatus(UserStatus.OFFLINE);
-
-    checkIfUserExists(newUser);
-
-    // saves the given entity but data is only persisted in the database once
-    // flush() is called
-    newUser = userRepository.save(newUser);
-    userRepository.flush();
-
-    log.debug("Created Information for User: {}", newUser);
-    return newUser;
-  }
-
-  /**
-   * This is a helper method that will check the uniqueness criteria of the
-   * username and the name
-   * defined in the User entity. The method will do nothing if the input is unique
-   * and throw an error otherwise.
-   *
-   * @param userToBeCreated
-   * @throws org.springframework.web.server.ResponseStatusException
-   * @see User
-   */
-  private void checkIfUserExists(User userToBeCreated) {
-    User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
-    User userByName = userRepository.findByName(userToBeCreated.getName());
-
-    String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
-    if (userByUsername != null && userByName != null) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-          String.format(baseErrorMessage, "username and the name", "are"));
-    } else if (userByUsername != null) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "username", "is"));
-    } else if (userByName != null) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "name", "is"));
+    @Autowired
+    public UserService(@Qualifier("userRepository") UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
-  }
+
+    public List<User> getUsers() {
+        return this.userRepository.findAll();
+    }
+
+    public User getUserById(Long userId) {
+        checkIfUserIdExists(userId);
+        return userRepository.findUserById(userId);
+
+    }
+
+    public User loginUser(User userInput){
+        User existingUser = userRepository.findByUsername(userInput.getUsername());
+        if (existingUser == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No user with this username");
+        }
+        if (!userInput.getPassword().equals(existingUser.getPassword())){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Password incorrect");
+        }
+        existingUser.setLogged_in(true);
+        userRepository.save(existingUser);
+        userRepository.flush();
+        return existingUser;
+    }
+
+    public User logoutUser(Long id){
+        User currentUser = userRepository.findUserById(id);
+        if (currentUser != null && currentUser.getLogged_in()){
+            currentUser.setLogged_in(false);
+            userRepository.save(currentUser);
+            userRepository.flush();
+            return currentUser;
+        }
+        else{
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Could not log out user");
+        }
+
+    }
+
+    public User createUser(User newUser) {
+        newUser.setToken(UUID.randomUUID().toString());
+        newUser.setLogged_in(true);
+
+        checkIfUserExists(newUser);
+
+        // saves the given entity but data is only persisted in the database once
+        // flush() is called
+        newUser = userRepository.save(newUser);
+        userRepository.flush();
+
+
+        log.debug("Created Information for User: {}", newUser);
+        return newUser;
+    }
+
+    public void updateUser(User user){
+        checkIfUserExists(user);
+        Long id = user.getId();
+        checkIfUserIdExists(id);
+        User oldUser = userRepository.findUserById(id);
+        oldUser.setBirthday(user.getBirthday());
+        oldUser.setUsername(user.getUsername());
+    }
+
+    public void updateUsername(User user){
+        checkIfUserExists(user);
+        Long id = user.getId();
+        User oldUser = userRepository.findUserById(id);
+        oldUser.setUsername(user.getUsername());
+    }
+
+    public void updateUserBirthday(User user){
+        User userByUsername = userRepository.findByUsername(user.getUsername());
+
+        String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
+        if (userByUsername != null && user.getId() != userByUsername.getId()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username is not unique");
+        }
+        Long id = user.getId();
+        User oldUser = userRepository.findUserById(id);
+        oldUser.setBirthday(user.getBirthday());
+        oldUser.setUsername(oldUser.getUsername());
+    }
+
+
+
+    /**
+     * This is a helper method that will check the uniqueness criteria of the
+     * username and the name
+     * defined in the User entity. The method will do nothing if the input is unique
+     * and throw an error otherwise.
+     *
+     * @param userToBeCreated
+     * @throws org.springframework.web.server.ResponseStatusException
+     * @see User
+     */
+    private void checkIfUserExists(User userToBeCreated) {
+        User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
+
+        String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
+        if (userByUsername != null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username is not unique");
+        }
+    }
+
+    private void checkIfUserIdExists(Long userId) {
+        User userById = userRepository.findUserById(userId);
+
+        String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
+        if (userById == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Id not found");
+        }
+    }
 }
+
