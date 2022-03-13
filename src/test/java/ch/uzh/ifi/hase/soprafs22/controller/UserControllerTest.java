@@ -244,7 +244,7 @@ public class UserControllerTest {
 
       //then
       mockMvc.perform(putRequest)
-              .andExpect(status().isNoContent());
+              .andExpect(status().isNotFound());
   }
 
   /**
