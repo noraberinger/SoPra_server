@@ -97,7 +97,6 @@ public class UserControllerTest {
         UserPostDTO userPostDTO = new UserPostDTO();
         //userPostDTO.setName("Test User");
         userPostDTO.setUsername("testUsername");
-        userPostDTO.setPassword("testPassword");
 
         given(userService.createUser(Mockito.any())).willReturn(user);
 
@@ -204,8 +203,7 @@ public class UserControllerTest {
         user.setLogged_in(true);
 
         UserPostDTO userPostDTO = new UserPostDTO();
-        userPostDTO.setPassword("testUsername");
-        userPostDTO.setPassword("testPassword");
+        userPostDTO.setUsername("testUsername");
 
 
         given(userService.createUser(Mockito.any())).willReturn(user);
