@@ -67,7 +67,6 @@ public class UserController {
   @ResponseStatus(HttpStatus.OK)
   @ResponseBody
   public UserGetDTO logoutUser(@PathVariable ("id") Long id) {
-      //User currentUser = userService.getUserById(id);
       User currentUser = userService.logoutUser(id);
       return DTOMapper.INSTANCE.convertEntityToUserGetDTO(currentUser);
   }
@@ -84,24 +83,25 @@ public class UserController {
     return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
   }
 
-    @PutMapping({"/users/{Id}"})
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ResponseBody
-    public void updateUser(@RequestBody User user) {
+
+  @PutMapping({"/users/{Id}"})
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @ResponseBody
+  public void updateUser(@RequestBody User user) {
         userService.updateUser(user);
     }
 
-    @PutMapping({"/users/username/{Id}"})
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ResponseBody
-    public void updateUsername(@RequestBody User user) {
+  @PutMapping({"/users/username/{Id}"})
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @ResponseBody
+  public void updateUsername(@RequestBody User user) {
         userService.updateUsername(user);
     }
 
-    @PutMapping({"/users/birthday/{Id}"})
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ResponseBody
-    public void updateUserBirthday(@RequestBody User user) {
+  @PutMapping({"/users/birthday/{Id}"})
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @ResponseBody
+  public void updateUserBirthday(@RequestBody User user) {
         userService.updateUserBirthday(user);
     }
 

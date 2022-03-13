@@ -14,6 +14,7 @@ public class UserGetDTO {
   private Date creation_date;
   private boolean logged_in;
   private Date birthday;
+  private String token;
 
   public Long getId() {
     return id;
@@ -69,5 +70,13 @@ public class UserGetDTO {
 
     public void setBirthday(Date birthday) {
         this.birthday = birthday;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }
