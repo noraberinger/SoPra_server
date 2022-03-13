@@ -140,7 +140,7 @@ public class UserService {
         }
     }
 
-    public void checkIfUserIdExists(Long userId) {
+    private void checkIfUserIdExists(Long userId) {
         User userById = userRepository.findUserById(userId);
 
         String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";

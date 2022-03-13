@@ -33,11 +33,11 @@ public class User implements Serializable {
   @Column(nullable = false, unique = true)
   private String username;
 
-  @Column(nullable = false)
+  @Column(nullable = true)
   private String password;
 
-  @Column(nullable = false)
-  private Date creation_date = new Date();
+  @Column(nullable = true)
+  private Date creation_date;
 
   @Column(nullable = false)
   private boolean logged_in;

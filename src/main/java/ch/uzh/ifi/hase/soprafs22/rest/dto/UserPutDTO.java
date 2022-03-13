@@ -37,4 +37,5 @@ public class UserPutDTO {
     public Date getBirthday() { return birthday; }
 
     public void setBirthday(Date birthday) { this.birthday = birthday; }
+
 }
