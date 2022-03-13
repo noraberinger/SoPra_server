@@ -9,6 +9,7 @@ public class UserPostDTO {
   private Long id;
   private boolean logged_in;
   private Date birthday;
+  private String password;
 
 
   public String getUsername() {
@@ -34,5 +35,9 @@ public class UserPostDTO {
   public Date getBirthday() { return birthday; }
 
   public void setBirthday(Date birthday) { this.birthday = birthday; }
+
+  public String getPassword() { return password; }
+
+  public void setPassword(String password) { this.password = password; }
 }
 
