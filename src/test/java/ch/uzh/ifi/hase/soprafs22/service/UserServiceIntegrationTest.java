@@ -1,6 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
-import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
+//import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,11 +64,9 @@ public class UserServiceIntegrationTest {
     //testUser.setName("testName");
     testUser.setUsername("testUsername");
     testUser.setPassword("testPassword");
-    User createdUser = userService.createUser(testUser);
 
     // attempt to create second user with same username
     User testUser2 = new User();
-
     // change the name but forget about the username >> same username is not allowed but same password is
     //testUser2.setName("testName2");
     testUser2.setUsername("testUsername");

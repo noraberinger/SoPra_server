@@ -17,8 +17,8 @@ public class DTOMapperTest {
     // create UserPostDTO
     UserPostDTO userPostDTO = new UserPostDTO();
     //userPostDTO.setName("name");
-    userPostDTO.setUsername("username");
-    userPostDTO.setPassword("password");
+    userPostDTO.setUsername("testUsername");
+    userPostDTO.setPassword("testPassword");
 
     // MAP -> Create user
     User user = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
@@ -34,7 +34,7 @@ public class DTOMapperTest {
     // create User
     User user = new User();
     //user.setName("Firstname Lastname");
-    user.setUsername("firstname");
+    user.setUsername("testUsername");
     //user.setStatus(UserStatus.ONLINE);
     user.setLogged_in(true);
     user.setToken("1");
